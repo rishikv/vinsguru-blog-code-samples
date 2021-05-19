@@ -1,7 +1,10 @@
 server:
   port: 8080
+
+---
 opentracing:
   jaeger:
+    service-name: Fib Service
     udp-sender:
-      host: jaeger
+      host: jaeger-agent
       port: 6831

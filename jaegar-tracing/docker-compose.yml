@@ -1,23 +1,105 @@
 version: "3"
 services:
   fact-service:
-    image: vinsdocker/fact-service
+    build: ./fact-service
+    image: rishikv/fact-service
+    container_name: fact-service
     environment:
       - ACTIVE_PROFILE=prod
-      - SPRING_APPLICATION_NAME=fact
+      - SPRING_APPLICATION_NAME=Fact Service
+    networks:
+      - jaeger-tracing
   fib-service:
-    image: vinsdocker/fib-service
+    build: ./fib-service
+    image: rishikv/fib-service
+    container_name: fib-service
     environment:
       - ACTIVE_PROFILE=prod
-      - SPRING_APPLICATION_NAME=fib
+      - SPRING_APPLICATION_NAME=Fib Service
+    networks:
+      - jaeger-tracing
   compute-service:
-    image: vinsdocker/compute-service
+    build: ./compute-service
+    image: rishikv/compute-service
+    container_name: compute-service
     environment:
       - ACTIVE_PROFILE=prod
-      - SPRING_APPLICATION_NAME=compute
+      - SPRING_APPLICATION_NAME=Compute Service
     ports:
       - 8080:8080
-  jaeger:
-    image: jaegertracing/all-in-one:1.17
+    networks:
+      - jaeger-tracing
+  jaeger-agent:
+    image: jaegertracing/jaeger-agent:1.22
+    container_name: jaeger-agent
+    command: [
+      "--reporter.grpc.host-port=jaeger-collector:14250",
+      "--log-level=debug"]
+    ports:
+      - 6831:6831/udp
+      - 6832:6832/udp
+      - 5778:5778
+      - 5775:5775/udp
+    depends_on:
+      - jaeger-collector
+    networks:
+      - jaeger-tracing
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.12.1
+    container_name: elasticsearch
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    volumes:
+      - ./elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - jaeger-tracing
+  jaeger-collector:
+    image: jaegertracing/jaeger-collector:1.22
+    container_name: jaeger-collector
+    environment:
+      SPAN_STORAGE_TYPE: "elasticsearch"
+    command: [
+        "--es.server-urls=http://elasticsearch:9200",
+        "--es.num-shards=1",
+        "--es.num-replicas=0",
+        "--log-level=info"
+    ]
+    ports:
+      - 14269:14269
+      - 14268:14268
+      - 14267:14267
+      - 9411:9411
+      - 14250
+    networks:
+      - jaeger-tracing
+    depends_on:
+      - elasticsearch
+  jaeger-query:
+    image: jaegertracing/jaeger-query:1.22
+    container_name: jaeger-query
     ports:
       - 8090:16686
+      - 16685:16685
+      - 16687:16687
+    environment:
+      SPAN_STORAGE_TYPE: "elasticsearch"
+      JAEGER_DISABLED: "false"
+      no_proxy: localhost
+      JAEGER_ENDPOINT: "http://jaeger-collector:14268/api/traces"
+    command: [
+      "--es.server-urls=http://elasticsearch:9200",
+      "--es.num-shards=1",
+      "--es.num-replicas=0",
+      "--log-level=info"
+    ]
+    networks:
+      - jaeger-tracing
+    depends_on:
+      - elasticsearch
+networks:
+  jaeger-tracing:
+    name: jaeger-tracing

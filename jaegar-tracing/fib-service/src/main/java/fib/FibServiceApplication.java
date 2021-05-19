@@ -3,7 +3,7 @@ package fib;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
+@SpringBootApplication (scanBasePackages = "fib")
 public class FibServiceApplication {
 
     public static void main(String[] args) {

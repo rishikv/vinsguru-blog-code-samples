@@ -14,12 +14,13 @@ public class FactController {
 
     @Autowired
     private FactService factService;
+//    Logger logger = LoggerFactory.getLogger(FactController.class);
 
     @GetMapping("/fact/{number}")
     public Long calculate(@PathVariable("number") int number){
-        System.out.println("Received fact request for :: " + number);
+//        logger.info("Received fact request for :: " + number);
         long result = factService.calculateFactorial(number);
-        System.out.println("Result :: " + result);
+//        logger.info("Result :: " + result);
         return result;
     }
 

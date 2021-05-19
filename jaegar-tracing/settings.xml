@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <profiles>
+        <profile>
+            <id>awsdev</id>
+            <repositories>
+                <repository>
+                    <id>central</id>
+                    <url>http://cental</url>
+                    <snapshots>
+                        <enabled>true</enabled>
+                        <updatePolicy>always</updatePolicy>
+                    </snapshots>
+                    <releases>
+                        <enabled>true</enabled>
+                        <updatePolicy>always</updatePolicy>
+                        <checksumPolicy>fail</checksumPolicy>
+                    </releases>
+                </repository>
+            </repositories>
+        </profile>
+	<profile>
+ 	   <id>bypassNexus</id>
+ 	   <repositories>
+ 		<repository>
+ 		    <id>repo-1</id>
+ 		    <name>repo-1</name>
+ 		    <url>https://repo.maven.apache.org/maven2</url>
+                </repository>
+           </repositories>
+ 	</profile>
+    </profiles>
+    <activeProfiles>
+        <activeProfile>bypassNexus</activeProfile>
+    </activeProfiles>
+    <servers>
+        <server>
+            <id>nexus</id>
+            <username>rkolliparaafs</username>
+            <password>ChangeMe</password>
+        </server>
+    </servers>
+</settings>
+

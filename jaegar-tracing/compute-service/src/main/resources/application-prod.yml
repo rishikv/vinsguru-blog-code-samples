@@ -6,10 +6,15 @@ factservice:
 
 fibservice:
   host: fib-service:8080
+logging:
+  level:
+    org:
+      springframework: DEBUG
 
 ---
 opentracing:
   jaeger:
+    service-name: Compute Service
     udp-sender:
-      host: jaeger
+      host: jaeger-agent
       port: 6831
