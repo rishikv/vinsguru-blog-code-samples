@@ -49,3 +49,4 @@
 **/mvnw.cmd
 **/spring-grpc-math-service/
 **/.DS_Store
+**/elasticsearch_data
